@@ -12,7 +12,37 @@ use Auth;
 class LoginController extends Controller
 {
     //
-    public function login(){
+    use AuthenticatesUsers;
+
+    /**
+     * Where to redirect users after login.
+     *
+     * @var string
+     */
+    protected $redirectTo = '/home';
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request){
+
+        $data=$request->only('email','password');
+            // ログインが成功したら、トップページへ
+            //↓ログイン条件は公開時には消すこと
+            if(Auth::attempt($data)){
+                return redirect('/top');
+            }
         return view("auth.login");
+    }
+
+    protected function loggedOut(\Illuminate\Http\Request $request) {
+      return redirect('login');
     }
 }
