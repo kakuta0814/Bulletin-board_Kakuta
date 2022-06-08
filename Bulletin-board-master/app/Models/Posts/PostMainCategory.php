@@ -3,6 +3,7 @@
 namespace App\Models\Posts;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Posts\PostSubCategory;
 
 class PostMainCategory extends Model
 {

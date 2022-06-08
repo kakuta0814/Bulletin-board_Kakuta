@@ -26,8 +26,9 @@
         <div id = "head">
             @yield('header')
         <button id="btn"><a href="/logout">ログアウト</a></button>
+        <button><a href="/top">TOP</a></button>
         <button><a href="/category">カテゴリーを追加</a></button>
-        <button><a href="/top">投稿一覧</a></button>
+        <button><a href="/post">投稿</a></button>
         <button><a href="/top">いいねした投稿</a></button>
         <button><a href="/top">自分の投稿</a></button>
     </div>

@@ -16,9 +16,10 @@
     {!! Form::open() !!}
         {{ Form::label('メインカテゴリー') }}
         <select name="main_category_id">
-            @foreach ($main_categories as $category)
+            @foreach ($all_categories as $category)
                     <option value="{{ $category->id }}">{{ $category->main_category }}</option>
             @endforeach
+
         </select>
 
         {{ Form::label('新規サブカテゴリー') }}
@@ -27,23 +28,30 @@
         {{ Form::submit('登録',['class' => 'btn btn-danger']) }}
     {!! Form::close() !!}
 
-
     カテゴリー一覧<br><br>
-    @foreach ($main_categories as $main)
+    @foreach ($all_categories as $category)
 
-        {{ $main->main_category }}
+        {{ $category->main_category }}
+        @if($category->postSubCategories->isEmpty())
+            <a href="/main/delete/{{$category->id}}" onclick="return confirm('このカテゴリを削除します。よろしいでしょうか？')">
+                    <div class="btn btn-danger">削除</div>
+            </a>
+                <br>
+        @endif
 
         <br>
 
-        @foreach ($sub_categories as $sub)
-            @if($main->id == $sub->post_main_category_id)
+        @foreach ($category->postSubCategories as $sub)
+
+
                 {{ $sub->sub_category }}
-                <a href="/category/{{$sub->id}}" onclick="return confirm('この投稿を削除します。よろしいでしょうか？')">
+                <a href="/sub/delete/{{$sub->id}}" onclick="return confirm('このカテゴリを削除します。よろしいでしょうか？')">
                     <div class="btn btn-danger">削除</div>
                 </a>
                 <br>
-            @endif
         @endforeach<br>
+
+
     @endforeach
 
 

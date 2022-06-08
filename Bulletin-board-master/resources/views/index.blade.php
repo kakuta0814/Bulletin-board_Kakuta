@@ -2,22 +2,14 @@
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Dashboard</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    You are logged in!
-                </div>
-            </div>
-        </div>
-    </div>
+    @if(isset($all_posts))
+        @foreach ($all_posts as $post)
+            投稿者:{{ $post->user_id }}
+            <a href="{{ route('post_data',['post_id'=>$post->id]) }}">
+                <div>タイトル:{{ $post->title }}</div>
+            </a>
+            投稿内容:{{ $post->post }}<br>
+        @endforeach
+    @endif
 </div>
 @endsection
