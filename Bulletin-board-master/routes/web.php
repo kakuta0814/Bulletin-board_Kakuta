@@ -40,3 +40,8 @@ Route::get('/post/delete/{post_id}','PostController@post_delete')->name('post_de
 // コメント
 Route::get('/comment/update/{comment_id}','PostController@comment_update_form')->name('comment_update_form');
 Route::post('/comment/update/{comment_id}','PostController@comment_update');
+
+Route::post('/post_like', 'PostController@like_post');
+
+// Route::get('/post/like/{id}', 'PostFavoritesController@like')->name('post.like');
+// Route::get('/post/unlike/{id}', 'PostFavoritesController@unlike')->name('post.unlike');

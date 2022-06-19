@@ -16,4 +16,9 @@ class User extends Authenticatable
         'password',
         'admin_role',
     ];
+
+        public function postFavorite()
+  {
+    return $this->hasMany('App\Models\Posts\PostFavorite');
+  }
 }

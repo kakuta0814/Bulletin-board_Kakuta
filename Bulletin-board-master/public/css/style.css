@@ -7,3 +7,6 @@ html{
 body{
 }
 /* header */
+.liked {
+  color: pink;
+}

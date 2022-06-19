@@ -9,6 +9,9 @@ use App\Models\Posts\PostSubCategory;
 use App\Models\Posts\PostMainCategory;
 use Carbon\Carbon;
 
+use App\Models\Posts\Post;
+use App\Models\Posts\PostFavorite;
+
 class PostController extends Controller
 {
     /**
@@ -188,7 +191,7 @@ class PostController extends Controller
 
     public function post_data($post_id)
     {
-            $post_data = \DB::table('posts')
+            $post = \DB::table('posts')
             ->Where('id', $post_id)
             ->first();
 
@@ -197,10 +200,37 @@ class PostController extends Controller
             ->orderBy('created_at', 'DESC')
             ->get();
 
+
+
+            // $post = Post::with('postFavorite')->get();
+
+            // dd ($post);
+
+            // $user = Auth::user();
+
         return view('post_data', [
-            'post_data' => $post_data,
+            'post' => $post,
             'post_comments' => $post_comments,
+            // 'post' => $post,
+            // 'user' => $user,
         ]);
+    }
+
+    public function like_post(Request $request)
+    {
+         if ( $request->input('like_product') == 0) {
+             //ステータスが0のときはデータベースに情報を保存
+             PostFavorite::create([
+                 'post_id' => $request->input('post_id'),
+                  'user_id' => auth()->user()->id,
+             ]);
+            //ステータスが1のときはデータベースに情報を削除
+         } elseif ( $request->input('like_product')  == 1 ) {
+             PostFavorite::where('post_id', "=", $request->input('post_id'))
+                ->where('user_id', "=", auth()->user()->id)
+                ->delete();
+        }
+         return  $request->input('like_product');
     }
 
     public function comment_update_form($comment_id)
