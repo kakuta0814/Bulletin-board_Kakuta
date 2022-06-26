@@ -12,17 +12,31 @@
             <div class="btn btn-danger">編集</div>
         </a><br>
 
-        @if(auth()->user())
-            @if(isset($post->like_products[0]))
-                <a class="toggle_wish" post_id="{{ $post->id }}" like_product="1">
-                    <i class="fas fa-heart"></i>
-                </a>
-            @else
-                <a class="toggle_wish" post_id="{{ $post->id }}" like_product="0">
-                    <i  class="far fa-heart"></i>
-                </a>
+            @if(count($favorites_judge)===1)
+                <!-- <a class="toggle_wish" post_id="{{ $post->id }}" like_product="1">
+                    <i class="fas fa-heart"></i><div class="fav-count">
+
+                </div>
+                </a> -->
+
+                <span class="likes">
+                    <i class="far fa-heart like-toggle liked" data-review-id="{{ $post->id }}"></i>
+                <span class="like-counter">{{ $favorites_count }}</span>
+                </span>
+
+            @elseif(count($favorites_judge)===0)
+                <!-- <a class="toggle_wish" post_id="{{ $post->id }}" like_product="0">
+                    <i  class="far fa-heart"></i><div class="fav-count">
+
+                </div>
+                </a> -->
+
+                <span class="likes">
+                    <i class="far fa-heart like-toggle" data-review-id="{{ $post->id }}"></i>
+                <span class="like-counter">{{ $favorites_count }}</span>
+                </span>
+
             @endif
-        @endif
 
 
 

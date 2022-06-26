@@ -10,3 +10,6 @@ body{
 .liked {
   color: pink;
 }
+.fav-count{
+  pointer-events: none;
+}

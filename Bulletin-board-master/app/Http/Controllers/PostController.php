@@ -200,6 +200,23 @@ class PostController extends Controller
             ->orderBy('created_at', 'DESC')
             ->get();
 
+            $favorites_count = \DB::table('post_favorites')
+            ->Where('post_id', $post_id)
+            ->count();
+
+            // $favorites_count = [
+            // 'post_fav' => $post_fav,
+            // ];
+
+
+
+            // いいね判定
+            $favorites_judge = \DB::table('post_favorites')
+            ->Where('post_id', $post_id)
+            ->Where('user_id', Auth::id())
+            ->get();
+// dd ($favorites_judge);
+
 
 
             // $post = Post::with('postFavorite')->get();
@@ -211,6 +228,8 @@ class PostController extends Controller
         return view('post_data', [
             'post' => $post,
             'post_comments' => $post_comments,
+            'favorites_count' => $favorites_count,
+            'favorites_judge' => $favorites_judge,
             // 'post' => $post,
             // 'user' => $user,
         ]);
@@ -218,20 +237,50 @@ class PostController extends Controller
 
     public function like_post(Request $request)
     {
-         if ( $request->input('like_product') == 0) {
-             //ステータスが0のときはデータベースに情報を保存
-             PostFavorite::create([
-                 'post_id' => $request->input('post_id'),
-                  'user_id' => auth()->user()->id,
+        $user_id = Auth::user()->id; //1.ログインユーザーのid取得
+        $review_id = $request->review_id; //2.投稿idの取得
+        $already_liked = PostFavorite::where('user_id', $user_id)->where('post_id', $review_id)->first(); //3.
+
+        if (!$already_liked) { //もしこのユーザーがこの投稿にまだいいねしてなかったら
+            PostFavorite::create([
+                 'post_id' => $review_id,
+                  'user_id' => $user_id,
              ]);
-            //ステータスが1のときはデータベースに情報を削除
-         } elseif ( $request->input('like_product')  == 1 ) {
-             PostFavorite::where('post_id', "=", $request->input('post_id'))
-                ->where('user_id', "=", auth()->user()->id)
+        } else { //もしこのユーザーがこの投稿に既にいいねしてたらdelete
+
+            PostFavorite::where('post_id', "=", $review_id)
+                ->where('user_id', "=", $user_id)
                 ->delete();
         }
-         return  $request->input('like_product');
+        //5.この投稿の最新の総いいね数を取得
+        $favorites_count = \DB::table('post_favorites')
+            ->Where('post_id', $review_id)
+            ->count();
+
+        // $favorites_count = [
+        // 'post_fav' => $post_fav,
+        // ];
+
+
+        return response()->json($favorites_count); //6.JSONデータをjQueryに返す
     }
+
+    // public function like_post(Request $request)
+    // {
+    //      if ( $request->input('like_product') == 0) {
+    //          //ステータスが0のときはデータベースに情報を保存
+    //          PostFavorite::create([
+    //              'post_id' => $request->input('post_id'),
+    //               'user_id' => auth()->user()->id,
+    //          ]);
+    //         //ステータスが1のときはデータベースに情報を削除
+    //      } elseif ( $request->input('like_product')  == 1 ) {
+    //          PostFavorite::where('post_id', "=", $request->input('post_id'))
+    //             ->where('user_id', "=", auth()->user()->id)
+    //             ->delete();
+    //     }
+    //      return  $request->input('like_product');
+    // }
 
     public function comment_update_form($comment_id)
     {
