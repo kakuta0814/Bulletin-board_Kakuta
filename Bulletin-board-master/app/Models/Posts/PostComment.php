@@ -16,4 +16,9 @@ class PostComment extends Model
         'comment',
         'event_at',
     ];
+
+    public function commentFavorite()
+  {
+    return $this->hasMany('App\Models\Posts\PostCommentFavorite');
+  }
 }

@@ -43,4 +43,4 @@ Route::post('/comment/update/{comment_id}','PostController@comment_update');
 
 Route::post('/post_like', 'PostController@like_post');
 
-Route::post('/post_like', 'PostController@like_post')->name('reviews.like');
+Route::post('/comment_like', 'PostController@like_comment');

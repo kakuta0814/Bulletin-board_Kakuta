@@ -2,6 +2,17 @@
 
 @section('content')
     <div class="container">
+
+    @if (isset( $errors ))
+        <div class="error-message">
+            <div class="error-inner">
+            @foreach ($errors->all() as $error)
+                <li>{{$error}}</li>
+            @endforeach
+            </div>
+        </div>
+    @endif
+
       {!! Form::open() !!}
         {{ Form::label('サブカテゴリー') }}
 

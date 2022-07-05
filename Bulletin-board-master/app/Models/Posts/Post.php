@@ -3,6 +3,7 @@
 namespace App\Models\Posts;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Posts\PostFavorite;
 
 class Post extends Model
 {
@@ -28,10 +29,7 @@ class Post extends Model
     return $this->hasMany('App\Models\Posts\PostFavorite');
   }
 
-//後でViewで使う、いいねされているかを判定するメソッド。
-    public function isLikedBy($user): bool {
-        return PostFavorite::where('user_id', $user->id)->where('post_id', $this->id)->first() !==null;
-    }
+
 
  /**'App\Models\Posts\PostSubCategory
   * リプライにLIKEを付いているかの判定

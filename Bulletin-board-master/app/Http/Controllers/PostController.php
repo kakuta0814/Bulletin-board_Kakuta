@@ -11,6 +11,8 @@ use Carbon\Carbon;
 
 use App\Models\Posts\Post;
 use App\Models\Posts\PostFavorite;
+use App\Models\Posts\PostComment;
+use App\Models\Posts\PostCommentFavorite;
 
 class PostController extends Controller
 {
@@ -32,71 +34,28 @@ class PostController extends Controller
     public function index()
     {
 
-        $all_posts = \DB::table('posts')
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        // $all_posts = \DB::table('posts')
+        //     ->orderBy('created_at', 'DESC')
+        //     ->get();
+
+        $all_posts = Post::withCount('postFavorite')->get();
+
+        $favorites = \DB::table('post_favorites')
+        ->get();
+
 
         return view('index', [
             'all_posts'  => $all_posts,
+            'favorites'  => $favorites,
         ]);
     }
 
     public function category()
     {
-        // $main_categories = \DB::table('post_main_categories')
-        //     ->select('id', 'main_category')
-        //     ->get();
 
-        // $sub_categories = \DB::table('post_sub_categories')
-        //     ->select('id', 'post_main_category_id', 'sub_category')
-        //     ->get();
-
-        // $all_categories = \DB::table('post_sub_categories')
-        //     ->select(
-        //         'post_main_categories.id',
-        //         'post_main_categories.main_category',
-        //         'post_sub_categories.post_main_category_id',
-        //         'post_sub_categories.sub_category',
-        //     )
-        //     ->leftjoin('post_main_categories', 'post_main_categories.id', '=', 'post_sub_categories.post_main_category_id')
-        //     ->get();
-
-            // dd ($all_categories);
-
-        //-------------------------------------------
 
         $all_categories = PostMainCategory::with('postSubCategories')->get();
 
-// $all_categories = PostSubCategory::all();
-
-
-
-
-        // $all_categories = PostSubCategory::with('postMainCategories')->get();
-
-        // dd ($all_categories);
-
-        //-------------------------------------------
-
-        // return view('category',[
-        //     'main_categories' =>$main_categories,
-        //     'sub_categories' =>$sub_categories,
-        // ]);
-
-        //-------------------------------------------
-
-        // $all_categories = PostMainCategory::all();
-
-        // $postSubCategories = PostSubCategory::query()
-        // ->whereIn('post_main_category_id', $all_categories->pluck('id')->toArray())
-        // ->get();
-
-        // $all_categories = $all_categories->map(function (PostMainCategory $postMainCategory) use ($postSubCategories) {
-        //     $subs = $postSubCategories->where('post_main_category_id', $postMainCategory->id);
-        //     $postMainCategory->setAttribute('postSubCategories', $subs);
-        //     return $postMainCategory;
-        // });
-        //-------------------------------------------
 
         return view('category',[
             'all_categories' =>$all_categories,
@@ -105,12 +64,12 @@ class PostController extends Controller
 
     public function category_create(Request $request)
     {
+        $data = $request->input();
         $main_category = $request->input('main_category');
         $sub_category = $request->input('sub_category');
         $main_category_id = intval($request->input('main_category_id'));
 
         // dd ($sub_category);
-
 
 
         if (isset( $sub_category ) && isset( $main_category_id )){
@@ -125,6 +84,15 @@ class PostController extends Controller
         }
 
         if (isset( $main_category )){
+
+            $validate = Validator::make($data, [
+            'main_category' => 'required|string|min:1|max:100',
+            ]);
+
+            if ($validate->fails()) {
+            return back()->withErrors($validate)->withInput();
+            }
+
             \DB::table('post_main_categories')->insert([
              'main_category' => $main_category
             ]);
@@ -177,6 +145,15 @@ class PostController extends Controller
     {
         $data = $request->input();
 
+        $validate = Validator::make($data, [
+            'title' => 'required|string|min:1|max:100',
+            'post' => 'required|string|min:1|max:5000',
+        ]);
+
+        if ($validate->fails()) {
+            return back()->withErrors($validate)->withInput();
+        }
+
         \DB::table('posts')->insert([
              'user_id' => Auth::id(),
              'post_sub_category_id' => $data['post_sub_category_id'],
@@ -195,20 +172,18 @@ class PostController extends Controller
             ->Where('id', $post_id)
             ->first();
 
-            $post_comments = \DB::table('post_comments')
+            // $post_comments = \DB::table('post_comments')
+            // ->Where('post_id', $post_id)
+            // ->orderBy('created_at', 'DESC')
+            // ->get();
+
+            $post_comments = PostComment::withCount('commentFavorite')
             ->Where('post_id', $post_id)
-            ->orderBy('created_at', 'DESC')
             ->get();
 
             $favorites_count = \DB::table('post_favorites')
             ->Where('post_id', $post_id)
             ->count();
-
-            // $favorites_count = [
-            // 'post_fav' => $post_fav,
-            // ];
-
-
 
             // いいね判定
             $favorites_judge = \DB::table('post_favorites')
@@ -217,21 +192,11 @@ class PostController extends Controller
             ->get();
 // dd ($favorites_judge);
 
-
-
-            // $post = Post::with('postFavorite')->get();
-
-            // dd ($post);
-
-            // $user = Auth::user();
-
         return view('post_data', [
             'post' => $post,
             'post_comments' => $post_comments,
             'favorites_count' => $favorites_count,
             'favorites_judge' => $favorites_judge,
-            // 'post' => $post,
-            // 'user' => $user,
         ]);
     }
 
@@ -257,30 +222,51 @@ class PostController extends Controller
             ->Where('post_id', $review_id)
             ->count();
 
+        $param = [
+        'favorites_count' => $favorites_count,
+        ];
         // $favorites_count = [
         // 'post_fav' => $post_fav,
         // ];
 
 
-        return response()->json($favorites_count); //6.JSONデータをjQueryに返す
+        return response()->json($param); //6.JSONデータをjQueryに返す
     }
 
-    // public function like_post(Request $request)
-    // {
-    //      if ( $request->input('like_product') == 0) {
-    //          //ステータスが0のときはデータベースに情報を保存
-    //          PostFavorite::create([
-    //              'post_id' => $request->input('post_id'),
-    //               'user_id' => auth()->user()->id,
-    //          ]);
-    //         //ステータスが1のときはデータベースに情報を削除
-    //      } elseif ( $request->input('like_product')  == 1 ) {
-    //          PostFavorite::where('post_id', "=", $request->input('post_id'))
-    //             ->where('user_id', "=", auth()->user()->id)
-    //             ->delete();
-    //     }
-    //      return  $request->input('like_product');
-    // }
+    public function like_comment(Request $request)
+    {
+        $user_id = Auth::user()->id; //1.ログインユーザーのid取得
+        $comment_id = $request->comment_id; //2.投稿idの取得
+        $already_liked = PostCommentFavorite::where('user_id', $user_id)->where('post_comment_id', $comment_id)->first(); //3.
+
+        if (!$already_liked) { //もしこのユーザーがこの投稿にまだいいねしてなかったら
+            PostCommentFavorite::create([
+                 'post_comment_id' => $comment_id,
+                  'user_id' => $user_id,
+             ]);
+        } else { //もしこのユーザーがこの投稿に既にいいねしてたらdelete
+
+            PostCommentFavorite::where('post_comment_id', "=", $comment_id)
+                ->where('user_id', "=", $user_id)
+                ->delete();
+        }
+        //5.この投稿の最新の総いいね数を取得
+        $comment_favorite_count = \DB::table('post_comment_favorites')
+            ->Where('post_comment_id', $comment_id)
+            ->count();
+
+        $param = [
+        'comment_favorite_count' => $comment_favorite_count,
+        ];
+        // $favorites_count = [
+        // 'post_fav' => $post_fav,
+        // ];
+
+
+        return response()->json($param); //6.JSONデータをjQueryに返す
+    }
+
+
 
     public function comment_update_form($comment_id)
     {
@@ -315,6 +301,15 @@ class PostController extends Controller
     {
 
         $post = $request->input();
+
+        $validate = Validator::make($post, [
+            'title' => 'required|string|min:1|max:100',
+            'post' => 'required|string|min:1|max:5000',
+        ]);
+
+        if ($validate->fails()) {
+            return back()->withErrors($validate)->withInput();
+        }
 
         \DB::table('posts')
         ->where('id', $post_id)

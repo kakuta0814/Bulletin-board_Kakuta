@@ -12,34 +12,17 @@
             <div class="btn btn-danger">編集</div>
         </a><br>
 
-            @if(count($favorites_judge)===1)
-                <!-- <a class="toggle_wish" post_id="{{ $post->id }}" like_product="1">
-                    <i class="fas fa-heart"></i><div class="fav-count">
-
-                </div>
-                </a> -->
-
-                <span class="likes">
-                    <i class="far fa-heart like-toggle liked" data-review-id="{{ $post->id }}"></i>
+        @if(count($favorites_judge)===1)
+            <span class="likes">
+                <i class="far fa-heart like-toggle liked" data-review-id="{{ $post->id }}"></i>
                 <span class="like-counter">{{ $favorites_count }}</span>
-                </span>
-
-            @elseif(count($favorites_judge)===0)
-                <!-- <a class="toggle_wish" post_id="{{ $post->id }}" like_product="0">
-                    <i  class="far fa-heart"></i><div class="fav-count">
-
-                </div>
-                </a> -->
-
-                <span class="likes">
-                    <i class="far fa-heart like-toggle" data-review-id="{{ $post->id }}"></i>
+            </span>
+        @elseif(count($favorites_judge)===0)
+            <span class="likes">
+                <i class="far fa-heart like-toggle" data-review-id="{{ $post->id }}"></i>
                 <span class="like-counter">{{ $favorites_count }}</span>
-                </span>
-
-            @endif
-
-
-
+            </span>
+        @endif
 
 
         @foreach ($post_comments as $comment)
@@ -49,7 +32,20 @@
             コメント:{{ $comment->comment }}<br>
             <a href="{{ route('comment_update_form',['comment_id'=>$comment->id]) }}">
             <div class="btn btn-danger">編集</div>
-        </a><br>
+            </a><br>
+
+            @if(Auth::user()->comment_isLikedBy($comment->id))
+                <span class="likes">
+                    <i class="far fa-heart like-comment-toggle liked" data-comment-id="{{ $comment->id }}"></i>
+                    <span class="comment-like-counter">{{ $comment->comment_favorite_count }}</span>
+                </span><!-- /.likes -->
+            @else
+                <span class="likes">
+                    <i class="far fa-heart like-comment-toggle" data-comment-id="{{ $comment->id }}"></i>
+                    <span class="like-counter">{{ $comment->comment_favorite_count }}</span>
+                </span><!-- /.likes -->
+            @endif
+
         @endforeach
 
         {!! Form::open() !!}
