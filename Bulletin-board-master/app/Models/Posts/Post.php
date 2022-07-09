@@ -29,6 +29,11 @@ class Post extends Model
     return $this->hasMany('App\Models\Posts\PostFavorite');
   }
 
+  public function actionLogs()
+  {
+    return $this->hasMany('App\Models\ActionLogs\ActionLog');
+  }
+
 
 
  /**'App\Models\Posts\PostSubCategory

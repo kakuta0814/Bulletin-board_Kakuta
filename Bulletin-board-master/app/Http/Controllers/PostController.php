@@ -38,15 +38,18 @@ class PostController extends Controller
         //     ->orderBy('created_at', 'DESC')
         //     ->get();
 
-        $all_posts = Post::withCount('postFavorite')->get();
+        $all_posts = Post::withCount('postFavorite','actionLogs')->get();
 
         $favorites = \DB::table('post_favorites')
         ->get();
+
+        $all_categories = PostMainCategory::with('postSubCategories')->get();
 
 
         return view('index', [
             'all_posts'  => $all_posts,
             'favorites'  => $favorites,
+            'all_categories'  => $all_categories,
         ]);
     }
 
@@ -160,7 +163,6 @@ class PostController extends Controller
              'title' => $data['title'],
              'post' => $data['post'],
              'event_at' => Carbon::now(),
-
          ]);
 
         return redirect('/post');
@@ -185,18 +187,31 @@ class PostController extends Controller
             ->Where('post_id', $post_id)
             ->count();
 
+            $view_count = \DB::table('action_logs')
+            ->Where('post_id', $post_id)
+            ->count();
+
             // いいね判定
             $favorites_judge = \DB::table('post_favorites')
             ->Where('post_id', $post_id)
             ->Where('user_id', Auth::id())
             ->get();
+
+            \DB::table('action_logs')->insert([
+                'user_id' => Auth::id(),
+                'post_id' => $post_id,
+                'event_at' => Carbon::now(),
+            ]);
+
 // dd ($favorites_judge);
+
 
         return view('post_data', [
             'post' => $post,
             'post_comments' => $post_comments,
             'favorites_count' => $favorites_count,
             'favorites_judge' => $favorites_judge,
+            'view_count' => $view_count,
         ]);
     }
 

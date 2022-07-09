@@ -15,8 +15,7 @@ Route::get('/top','PostController@index');
 
 Route::get('/logout', 'Auth\LoginController@logout');
 
-Route::get('/category', 'PostController@category');
-Route::post('/category', 'PostController@category_create');
+
 
 // 投稿作成
 Route::get('/post','PostController@post');
@@ -30,9 +29,7 @@ Route::post('/post/{post_id}','PostController@comment_create');
 Route::get('/post/update/{post_id}','PostController@post_update_form')->name('post_update_form');
 Route::post('/post/update/{post_id}','PostController@post_update');
 
-// サブ・メインカテゴリ削除
-Route::get('/sub/delete/{id}', 'PostController@sub_category_delete');
-Route::get('/main/delete/{id}', 'PostController@main_category_delete');
+
 
 // 投稿削除
 Route::get('/post/delete/{post_id}','PostController@post_delete')->name('post_delete');
@@ -44,3 +41,14 @@ Route::post('/comment/update/{comment_id}','PostController@comment_update');
 Route::post('/post_like', 'PostController@like_post');
 
 Route::post('/comment_like', 'PostController@like_comment');
+
+Route::group(['middleware' => ['auth', 'can:admin']], function () {
+// カテゴリー
+  Route::get('/category', 'PostController@category');
+  Route::post('/category', 'PostController@category_create');
+
+// サブ・メインカテゴリ削除
+  Route::get('/sub/delete/{id}', 'PostController@sub_category_delete');
+  Route::get('/main/delete/{id}', 'PostController@main_category_delete');
+
+});

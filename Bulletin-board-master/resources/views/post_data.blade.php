@@ -8,6 +8,7 @@
         投稿者:{{ $post->user_id }}<br>
         タイトル:{{ $post->title }}<br>
         投稿内容:{{ $post->post }}<br>
+        閲覧数:{{ $view_count }}
         <a href="{{ route('post_update_form',['post_id'=>$post->id]) }}">
             <div class="btn btn-danger">編集</div>
         </a><br>
@@ -30,6 +31,7 @@
             ユーザーid:{{ $comment->user_id }}<br>
             投稿日時:{{ $comment->created_at }}<br>
             コメント:{{ $comment->comment }}<br>
+
             <a href="{{ route('comment_update_form',['comment_id'=>$comment->id]) }}">
             <div class="btn btn-danger">編集</div>
             </a><br>

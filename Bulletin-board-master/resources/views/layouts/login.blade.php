@@ -33,7 +33,9 @@
             @yield('header')
         <button id="btn"><a href="/logout">ログアウト</a></button>
         <button><a href="/top">TOP</a></button>
-        <button><a href="/category">カテゴリーを追加</a></button>
+        @can('admin')
+            <button><a href="/category">カテゴリーを追加</a></button>
+        @endcan
         <button><a href="/post">投稿</a></button>
         <button><a href="/top">いいねした投稿</a></button>
         <button><a href="/top">自分の投稿</a></button>

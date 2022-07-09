@@ -13,4 +13,9 @@ class ActionLog extends Model
         'post_id',
         'event_at',
     ];
+
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
 }
