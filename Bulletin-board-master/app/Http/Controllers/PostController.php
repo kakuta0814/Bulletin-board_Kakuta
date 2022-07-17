@@ -38,17 +38,72 @@ class PostController extends Controller
         //     ->orderBy('created_at', 'DESC')
         //     ->get();
 
-        $all_posts = Post::withCount('postFavorite','actionLogs')->get();
-
-        $favorites = \DB::table('post_favorites')
+        $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')
+        // ->with('postSubCategories')
         ->get();
+
+        // dd ($all_posts);
+
+        $all_categories = PostMainCategory::with('postSubCategories')->get();
+        // dd ($all_categories);
+
+
+        return view('index', [
+            'all_posts'  => $all_posts,
+            'all_categories'  => $all_categories,
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+
+
+        $search = $request->input('search');
+
+        $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')->Where('title','LIKE', "%{$search}%")->orWhere('post', 'LIKE', "%{$search}%")->get();
+// dd ($all_posts);
+        $all_categories = PostMainCategory::with('postSubCategories')->get();
+
+
+        return view('index', [
+            'all_posts'  => $all_posts,
+            'all_categories'  => $all_categories,
+        ]);
+    }
+
+    public function my_post()
+    {
+
+
+        $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')
+            ->where('user_id', Auth::id())->get();
+
+// dd ($all_posts);
 
         $all_categories = PostMainCategory::with('postSubCategories')->get();
 
 
         return view('index', [
             'all_posts'  => $all_posts,
-            'favorites'  => $favorites,
+            'all_categories'  => $all_categories,
+        ]);
+    }
+
+    public function my_like()
+    {
+        $like_post_id = PostFavorite::where('user_id', Auth::id())->get('post_id')->toArray();
+
+        $all_posts = Post::with('user','subCategories','postFavorite')->withCount('postFavorite','actionLogs','comment')
+        ->whereIn('id', $like_post_id)
+        ->get();
+
+// dd ($all_posts);
+
+        $all_categories = PostMainCategory::with('postSubCategories')->get();
+
+
+        return view('index', [
+            'all_posts'  => $all_posts,
             'all_categories'  => $all_categories,
         ]);
     }
@@ -72,10 +127,18 @@ class PostController extends Controller
         $sub_category = $request->input('sub_category');
         $main_category_id = intval($request->input('main_category_id'));
 
-        // dd ($sub_category);
+        // dd ($data);
 
 
         if (isset( $sub_category ) && isset( $main_category_id )){
+            $validate = Validator::make($data, [
+                'sub_category' => 'required|string|min:2|max:100|unique:post_sub_categories',
+            ]);
+
+            if ($validate->fails()) {
+                return back()->withErrors($validate)->withInput();
+            }
+
             \DB::table('post_sub_categories')->insert([
                 // 後で修正
              'post_main_category_id' => $main_category_id,
@@ -89,7 +152,7 @@ class PostController extends Controller
         if (isset( $main_category )){
 
             $validate = Validator::make($data, [
-            'main_category' => 'required|string|min:1|max:100',
+            'main_category' => 'required|string|min:2|max:100',
             ]);
 
             if ($validate->fails()) {
@@ -106,10 +169,26 @@ class PostController extends Controller
 
         if (isset( $sub_category ) && !isset( $main_category_id )){
             // エラー文
+            $validate = Validator::make($data, [
+                'main_category' => 'required|unique:post_main_categories',
+                'sub_category' => 'required|string|min:2|max:100|unique:post_sub_categories',
+            ]);
+
+            if ($validate->fails()) {
+                return back()->withErrors($validate)->withInput();
+            }
                 return redirect('/category');
         }
         if (!isset( $sub_category ) && isset( $main_category_id )){
             // エラー文
+            $validate = Validator::make($data, [
+                'main_category' => 'required|unique:post_main_categories',
+                'sub_category' => 'required|string|min:2|max:100|unique:post_sub_categories',
+            ]);
+
+            if ($validate->fails()) {
+                return back()->withErrors($validate)->withInput();
+            }
                 return redirect('/category');
         }
 
@@ -149,8 +228,10 @@ class PostController extends Controller
         $data = $request->input();
 
         $validate = Validator::make($data, [
-            'title' => 'required|string|min:1|max:100',
-            'post' => 'required|string|min:1|max:5000',
+
+            'post_sub_category_id' => 'required',
+            'title' => 'required|string|min:2|max:100',
+            'post' => 'required|string|min:2|max:5000',
         ]);
 
         if ($validate->fails()) {
@@ -165,12 +246,12 @@ class PostController extends Controller
              'event_at' => Carbon::now(),
          ]);
 
-        return redirect('/post');
+        return redirect('/top');
     }
 
     public function post_data($post_id)
     {
-            $post = \DB::table('posts')
+            $post = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')
             ->Where('id', $post_id)
             ->first();
 
@@ -179,13 +260,10 @@ class PostController extends Controller
             // ->orderBy('created_at', 'DESC')
             // ->get();
 
-            $post_comments = PostComment::withCount('commentFavorite')
+            $post_comments = PostComment::with('user')->withCount('commentFavorite')
             ->Where('post_id', $post_id)
             ->get();
 
-            $favorites_count = \DB::table('post_favorites')
-            ->Where('post_id', $post_id)
-            ->count();
 
             $view_count = \DB::table('action_logs')
             ->Where('post_id', $post_id)
@@ -209,7 +287,6 @@ class PostController extends Controller
         return view('post_data', [
             'post' => $post,
             'post_comments' => $post_comments,
-            'favorites_count' => $favorites_count,
             'favorites_judge' => $favorites_judge,
             'view_count' => $view_count,
         ]);
@@ -285,9 +362,10 @@ class PostController extends Controller
 
     public function comment_update_form($comment_id)
     {
-            $comment_data = \DB::table('post_comments')
-            ->Where('id', $comment_id)
-            ->first();
+
+        $comment_data = \DB::table('post_comments')
+        ->Where('id', $comment_id)
+        ->first();
 
         return view('comment_update', [
             'comment_data' => $comment_data,
@@ -318,6 +396,7 @@ class PostController extends Controller
         $post = $request->input();
 
         $validate = Validator::make($post, [
+            'post_sub_category_id' => 'required',
             'title' => 'required|string|min:1|max:100',
             'post' => 'required|string|min:1|max:5000',
         ]);
@@ -345,6 +424,15 @@ class PostController extends Controller
 
         $comment = $request->input();
 
+        $validate = Validator::make($comment, [
+            'comment' => 'required|string|min:1|max:2500',
+        ]);
+
+        if ($validate->fails()) {
+            return back()->withErrors($validate)->withInput();
+        }
+
+
         \DB::table('post_comments')
         ->where('id', $comment_id)
         ->update([
@@ -371,10 +459,28 @@ class PostController extends Controller
         return redirect('top');
     }
 
+    public function comment_delete($post_id)
+    {
+        \DB::table('post_comments')
+            ->where('id', $post_id)
+            ->delete();
+
+        return redirect('top');
+    }
+
+
     public function comment_create(Request $request,$post_id)
     {
 
-        $comment_data = $request->input('comment_create');
+        $comment_data = $request->input();
+
+        $validate = Validator::make($comment_data, [
+            'comment_create' => 'required|string|min:2|max:2500',
+        ]);
+
+        if ($validate->fails()) {
+            return back()->withErrors($validate)->withInput();
+        }
 
         \DB::table('post_comments')->insert([
              'user_id' => Auth::id(),

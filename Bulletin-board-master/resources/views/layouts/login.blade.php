@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
+    <meta charset="utf-8" />
     <!--IEブラウザ対策-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="description" content="ページの内容を表す文章" />
     <title></title>
     <link rel="stylesheet" href="{{ asset('css/reset.css') }} ">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/style.css') }} ">
     <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
     <!-- <script src="{{ asset('js/jquery-3.6.0.min.js') }} "></script> -->
@@ -24,31 +25,18 @@
     <!--iphoneのアプリアイコン指定-->
     <link rel="apple-touch-icon-precomposed" href="画像のURL" />
     <!--OGPタグ/twitterカード-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div id = "head">
-            @yield('header')
-        <button id="btn"><a href="/logout">ログアウト</a></button>
-        <button><a href="/top">TOP</a></button>
-        @can('admin')
-            <button><a href="/category">カテゴリーを追加</a></button>
-        @endcan
-        <button><a href="/post">投稿</a></button>
-        <button><a href="/top">いいねした投稿</a></button>
-        <button><a href="/top">自分の投稿</a></button>
-    </div>
-    </header>
 
 
-    <div id="contents">
-        <div id="main">
+
+
             @yield('content')
-        </div>
 
-    </div>
+
+
 
 
 

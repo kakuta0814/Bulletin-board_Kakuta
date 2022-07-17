@@ -37,10 +37,19 @@ Route::get('/post/delete/{post_id}','PostController@post_delete')->name('post_de
 // コメント
 Route::get('/comment/update/{comment_id}','PostController@comment_update_form')->name('comment_update_form');
 Route::post('/comment/update/{comment_id}','PostController@comment_update');
+Route::get('/comment/delete/{comment_id}','PostController@comment_delete')->name('comment_delete');
 
+// いいね
 Route::post('/post_like', 'PostController@like_post');
-
 Route::post('/comment_like', 'PostController@like_comment');
+
+// 検索
+Route::get('/search', 'PostController@search');
+
+Route::get('/my_post', 'PostController@my_post');
+
+Route::get('/like', 'PostController@my_like');
+
 
 Route::group(['middleware' => ['auth', 'can:admin']], function () {
 // カテゴリー

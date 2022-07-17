@@ -6,27 +6,32 @@
     <div class="logout-inner">
       {!! Form::open() !!}
 
-      <p class="white welcome">ログイン</p>
-
-      <div class="form">
-        {{ Form::label('メールアドレス') }}
-        {{ Form::text('email',null,['class' => 'input']) }}
-
-
-      </div>
-
-      <div class="margin-form form">
-        {{ Form::label('パスワード') }}
-        {{ Form::password('password',['class' => 'input']) }}
-      </div>
-
-      <div class="btn-form">
-        {{ Form::submit('ログイン',['class' => 'btn btn-danger']) }}
-      </div>
+        <div class="login-title bold">ログイン</div>
 
 
 
-      <div class="white new-user"><a href="/register">新規ユーザーの方はこちら</a></div>
+
+        <div class="div">
+          {{ Form::label('メールアドレス') }}
+        </div>
+        <div class="div">
+          {{ Form::text('email',null,['class' => 'input']) }}
+        </div>
+
+
+        <div class="div">
+          {{ Form::label('パスワード') }}
+        </div>
+        <div class="div">
+          {{ Form::password('password',['class' => 'input']) }}
+        </div>
+
+        <div class="btn-form">
+          {!! Form::button('<div class="link blue">ログイン</div>', ['class' => "btn", 'type' => 'submit' ]) !!}
+        </div>
+
+
+        <div>新規ユーザーの方は<a href="/register">こちら</a></div>
 
       {!! Form::close() !!}
     </div>

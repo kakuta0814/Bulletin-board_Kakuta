@@ -4,21 +4,19 @@
 
 
 
-<div class="added-from">
+<div class="logout-from">
 
   <div class="added-inner">
 
 
 
-    <p class="added-sub">登録ありがとうございます</p>
+    <div class="login-title bold">登録ありがとうございます</div>
 
-
-
-    <a href="/login">
-      <div class="home-btn">
-        <div>ログイン画面へ</div>
-      </div>
-    </a>
+    <div class="link blue">
+      <a href="/login">
+        ログイン画面へ
+      </a>
+    </div>
 
 
 

@@ -4,6 +4,8 @@ namespace App\Models\Posts;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Posts\PostFavorite;
+use App\Models\Posts\PostSubCategory;
+use App\Models\Users\User;
 
 class Post extends Model
 {
@@ -24,10 +26,22 @@ class Post extends Model
       return $this->belongsTo(User::class);
   }
 
+  public function subCategories()
+  {
+      return $this->belongsTo('App\Models\Posts\PostSubCategory', 'post_sub_category_id');
+  }
+
     public function postFavorite()
   {
     return $this->hasMany('App\Models\Posts\PostFavorite');
   }
+
+  public function comment()
+  {
+    return $this->hasMany('App\Models\Posts\PostFavorite');
+  }
+
+
 
   public function actionLogs()
   {

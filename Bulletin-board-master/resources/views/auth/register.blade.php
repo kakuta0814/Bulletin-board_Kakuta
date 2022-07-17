@@ -2,25 +2,27 @@
 
 @section('content')
 
-@if (isset( $errors ))
-  <div class="error-message">
-    <div class="error-inner">
-    @foreach ($errors->all() as $error)
-        <li>{{$error}}</li>
-    @endforeach
-    </div>
-  </div>
-@endif
+
 
 
 <!-- ------------------------------------------- -->
 
-<div class="register-from">
+<div class="logout-from">
 
   <div class="logout-inner">
+
+  @if (isset( $errors ))
+    <div class="error-message">
+      <div class="error-inner">
+      @foreach ($errors->all() as $error)
+          <li>{{$error}}</li>
+      @endforeach
+      </div>
+    </div>
+  @endif
     {!! Form::open() !!}
 
-    <p class="white welcome">新規ユーザー登録</p>
+    <p class="login-title bold">ユーザー登録</p>
 
     <div class="form">
       {{ Form::label('ユーザー名') }}
@@ -43,7 +45,7 @@
     </div>
 
     <div class="btn-form">
-      {{ Form::submit('確認',['class' => 'btn btn-danger']) }}
+      {!! Form::button('<div class="link blue">確認</div>', ['class' => "btn", 'type' => 'submit' ]) !!}
     </div>
 
 

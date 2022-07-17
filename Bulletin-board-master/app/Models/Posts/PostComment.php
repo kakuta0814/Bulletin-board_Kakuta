@@ -3,6 +3,7 @@
 namespace App\Models\Posts;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Users\User;
 
 class PostComment extends Model
 {
@@ -20,5 +21,15 @@ class PostComment extends Model
     public function commentFavorite()
   {
     return $this->hasMany('App\Models\Posts\PostCommentFavorite');
+  }
+
+  public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
+
+      public function user()
+  {
+      return $this->belongsTo(User::class);
   }
 }

@@ -6,6 +6,12 @@ html{
 }
 body{
 }
+
+textarea{
+  width: 100%;
+  resize: none;
+  outline: none;
+}
 /* header */
 .liked {
   color: pink;
@@ -13,8 +19,24 @@ body{
 .fav-count{
   pointer-events: none;
 }
+.flex{
+  display: flex;
+}
 
-/* テスト */
+.width{
+  width: 100%;
+}
+
+.bold{
+  font-weight: bold;
+}
+
+.error-inner{
+  color: #BC2626;
+}
+
+
+/* アコーディオンメニュー */
 
 .accordion-container {
 
@@ -30,22 +52,11 @@ body{
   display: block;
   position: relative;
   margin: 0;
-  padding: 0.625em 0.625em 0.625em 2em;
-  font-size: 1.25em;
   font-weight: normal;
-  color: #fff;
-  background: #186AC9;
   cursor: pointer;
-  font-size: 24px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.accordion-container .accordion-title:hover,
-.accordion-container .accordion-title:active,
-.accordion-container .content-entry.open .accordion-title {
-  background-color: #186AC9;
-  color: white;
-}
 
 .accordion-container .accordion-title:hover i:before,
 .accordion-container .accordion-title:hover i:active,
@@ -60,14 +71,14 @@ body{
 .accordion-title:after {
   content: "";
   position: absolute;
-  right: 25px;
+  left: 100px;
   top: 38%;
   transition: all 0.2s ease-in-out;
   display: block;
   width: 8px;
   height: 8px;
-  border-top: solid 2px #fff;
-  border-right: solid 2px #fff;
+  border-top: solid 2px;
+  border-right: solid 2px;
   -webkit-transform: rotate(135deg);
   transform: rotate(135deg);
 }
@@ -80,27 +91,217 @@ body{
 
 .accordion-content {
   display: none;
-  position: relative;
-  top: 16px;
-  left: 97px;
-  border: 2px solid #00297E;
+
   background-color: #FFFFFF;
-  width: 400px;
-  height: 350px;
 }
+/* top */
+.main{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    height:100vh
 
-.accordion-content :hover{
-    background-color: #00297E;
-    color: #FFFFFF;
 }
+.container{
+    flex: 0 0 70%;
+    background-color: #FFFFFF;
 
-.accordion-content a{
+    /* background-color: #E0E0E0; */
+}
+a{
     text-decoration: none;
+    color: black;
+}
+
+.side-inner{
+  width: 200px;
 }
 
 
-/* CSS for CodePen */
-.accordion-container {
+.main-menu{
+    flex: 0 0 29.9%;
+}
+.inner{
+  margin:0 100px 0 auto;
+  max-width: 400px;
+}
+.post{
+    border: 1px solid #727272;
+    margin: 10px;
+    padding: 10px;
+}
+.post-center{
+  align-items: center;
+}
+.post .link{
+  margin: 0;
+}
+.post-name{
+  margin-right: 10px;
+}
+.post-create{
+  margin-right: 5px;
+}
+.post-view{
+  margin-right: 10px;
+}
+.post-title{
+  margin-right: 5px;
+  font-size: 18px;
+}
+.post-category{
+  margin-right: 5px;
+}
+.post-comment{
+  margin: 0 10px;
+}
+
+/* ボタン関連 */
+.link{
+  /* max-width: 150px; */
+  min-width: 75px;
+  margin: 10px 0;
+  padding: 5px;
+  color: #FFFFFF;
+}
+.link a{
+  color: #FFFFFF;
+  display: block;
+  text-align: center;
+}
+
+.blue{
+  background-color: #4A86E8;
+}
+
+.red{
+  background-color: #CC4125;
+}
+
+.btn{
+  width: 200px;
+  margin: 0;
+  padding: 0;
+}
+
+/* カテゴリー */
+.main-flex{
+  align-items: center;
+}
+.sub-flex{
+  align-items: center;
+}
+
+.category-from{
   width: 300px;
-  margin: 1.875em auto;
+}
+
+.category-from label{
+  width: 100%;
+}
+.category-from input{
+  width: 100%;
+}
+
+.category-from select{
+  width: 100%;
+}
+
+.category-from button{
+  width: 100%;
+}
+
+.category-list .link{
+  margin: 3px 10px 3px 10px;
+}
+
+.category-list .logout{
+  max-width: 250px;
+}
+
+.sub-margin{
+ margin-left: 15px;
+}
+
+/* 投稿画面 */
+.post-form{
+  max-width: 300px;
+  margin: 0 auto;
+}
+.post-form select{
+  width: 100%;
+}
+.post-form input{
+  width: 100%;
+}
+.post-form button{
+  width: 100%;
+}
+
+.post-form .flex{
+  align-items: center;
+  justify-content: space-between;
+}
+/* 投稿詳細画面 */
+.post-data{
+  max-width: 500px;
+  margin: 0 auto;
+}
+.post-data .flex{
+  align-items: center;
+  justify-content: space-between;
+}
+.comment-area-inner{
+ border-bottom: 1px solid #727272;
+ margin: 10px 0;
+ padding: 10px;
+}
+
+.comment-area{
+  margin: 20px 0;
+}
+
+.post-area{
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.comment-form{
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.post-left{
+  margin-left: 10px;
+}
+/* ログイン関連 */
+.logout-from{
+  max-width: 400px;
+  margin: 0 auto;
+  padding-top: 50px;
+}
+
+input{
+  width: 100%;
+}
+
+.logout-from a{
+  color: #4A86E8;
+}
+
+.login-title{
+  text-align: center;
+}
+
+.btn-form{
+  text-align: right;
+}
+
+.added-inner a{
+  color: #FFFFFF;
+}
+
+.added-inner .link{
+  max-width: 300px;
+  margin: 30px auto;
 }
