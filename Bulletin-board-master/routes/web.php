@@ -50,6 +50,8 @@ Route::get('/my_post', 'PostController@my_post');
 
 Route::get('/like', 'PostController@my_like');
 
+Route::get('/search/{sub_id}','PostController@search_sub')->name('search_sub');
+
 
 Route::group(['middleware' => ['auth', 'can:admin']], function () {
 // カテゴリー

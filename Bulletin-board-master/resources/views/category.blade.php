@@ -83,11 +83,14 @@
 
             <div class="flex sub-flex">
                 <div class="sub-margin">{{ $sub->sub_category }}</div>
+
+                @if ($sub->posts->isEmpty())
                 <div class="link red">
                     <a href="/sub/delete/{{$sub->id}}" onclick="return confirm('このサブカテゴリを削除します。よろしいでしょうか？')">
                         削除
                     </a>
                 </div>
+                @endif
             </div>
             @endforeach
 

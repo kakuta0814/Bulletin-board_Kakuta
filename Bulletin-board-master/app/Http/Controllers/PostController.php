@@ -13,6 +13,7 @@ use App\Models\Posts\Post;
 use App\Models\Posts\PostFavorite;
 use App\Models\Posts\PostComment;
 use App\Models\Posts\PostCommentFavorite;
+use App\Models\ActionLogs\ActionLog;
 
 class PostController extends Controller
 {
@@ -38,7 +39,8 @@ class PostController extends Controller
         //     ->orderBy('created_at', 'DESC')
         //     ->get();
 
-        $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')
+        $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs')
+        ->withCount('comment')
         // ->with('postSubCategories')
         ->get();
 
@@ -60,7 +62,21 @@ class PostController extends Controller
 
         $search = $request->input('search');
 
-        $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')->Where('title','LIKE', "%{$search}%")->orWhere('post', 'LIKE', "%{$search}%")->get();
+        // $all_posts = Post::with('user','subCategories')
+        // ->withCount('postFavorite','actionLogs','comment')
+        // ->Where('title','LIKE', "%{$search}%")
+        // ->orWhere('post', 'LIKE', "%{$search}%")
+        // ->get();
+
+        $all_posts = Post::whereHas('subCategories', function ($query) use ($request) {
+            $query->where('sub_category', $request->search);
+        })
+        ->withCount('postFavorite','actionLogs','comment')
+        ->orWhere('title','LIKE', "%{$search}%")
+        ->orWhere('post', 'LIKE', "%{$search}%")
+        ->get();
+
+
 // dd ($all_posts);
         $all_categories = PostMainCategory::with('postSubCategories')->get();
 
@@ -77,6 +93,26 @@ class PostController extends Controller
 
         $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')
             ->where('user_id', Auth::id())->get();
+
+// dd ($all_posts);
+
+        $all_categories = PostMainCategory::with('postSubCategories')->get();
+
+
+        return view('index', [
+            'all_posts'  => $all_posts,
+            'all_categories'  => $all_categories,
+        ]);
+    }
+
+
+    public function search_sub($sub_id)
+    {
+// dd ($sub_id);
+
+        $all_posts = Post::with('user','subCategories')->withCount('postFavorite','actionLogs','comment')
+            ->where('post_sub_category_id', $sub_id)
+            ->get();
 
 // dd ($all_posts);
 
@@ -112,9 +148,9 @@ class PostController extends Controller
     {
 
 
-        $all_categories = PostMainCategory::with('postSubCategories')->get();
+        $all_categories = PostMainCategory::with('postSubCategories.posts')->get();
 
-
+// dd ($all_categories);
         return view('category',[
             'all_categories' =>$all_categories,
         ]);
@@ -152,7 +188,7 @@ class PostController extends Controller
         if (isset( $main_category )){
 
             $validate = Validator::make($data, [
-            'main_category' => 'required|string|min:2|max:100',
+            'main_category' => 'required|string|min:2|max:100|unique:post_main_categories',
             ]);
 
             if ($validate->fails()) {
@@ -255,19 +291,9 @@ class PostController extends Controller
             ->Where('id', $post_id)
             ->first();
 
-            // $post_comments = \DB::table('post_comments')
-            // ->Where('post_id', $post_id)
-            // ->orderBy('created_at', 'DESC')
-            // ->get();
-
             $post_comments = PostComment::with('user')->withCount('commentFavorite')
             ->Where('post_id', $post_id)
             ->get();
-
-
-            $view_count = \DB::table('action_logs')
-            ->Where('post_id', $post_id)
-            ->count();
 
             // いいね判定
             $favorites_judge = \DB::table('post_favorites')
@@ -275,11 +301,35 @@ class PostController extends Controller
             ->Where('user_id', Auth::id())
             ->get();
 
-            \DB::table('action_logs')->insert([
-                'user_id' => Auth::id(),
-                'post_id' => $post_id,
-                'event_at' => Carbon::now(),
-            ]);
+            $view_count = \DB::table('action_logs')
+            ->Where('post_id', $post_id)
+            ->count();
+
+
+            $log_check = ActionLog::Where('user_id', Auth::id())
+            ->Where('post_id', $post_id)
+            ->get();
+
+// dd ($log_check);
+
+            if ($log_check->isEmpty()){
+
+                \DB::table('action_logs')->insert([
+                    'user_id' => Auth::id(),
+                    'post_id' => $post_id,
+                    'event_at' => Carbon::now(),
+                ]);
+
+                return view('post_data', [
+                    'post' => $post,
+                    'post_comments' => $post_comments,
+                    'favorites_judge' => $favorites_judge,
+                    'view_count' => $view_count,
+                ]);
+            }
+
+
+
 
 // dd ($favorites_judge);
 
@@ -471,10 +521,10 @@ class PostController extends Controller
 
     public function comment_create(Request $request,$post_id)
     {
-
-        $comment_data = $request->input();
-
-        $validate = Validator::make($comment_data, [
+// dd ($post_id);
+        $comment_data = $request->input('comment_create');
+// dd ($comment_data);
+        $validate = Validator::make($request->all(), [
             'comment_create' => 'required|string|min:2|max:2500',
         ]);
 

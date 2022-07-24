@@ -38,7 +38,7 @@ class Post extends Model
 
   public function comment()
   {
-    return $this->hasMany('App\Models\Posts\PostFavorite');
+    return $this->hasMany('App\Models\Posts\PostComment','post_id');
   }
 
 

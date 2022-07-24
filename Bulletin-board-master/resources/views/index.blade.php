@@ -42,17 +42,19 @@
                             コメント数{{ $post->comment_count }}
                         </div>
 
+                        <div class="div">
                         @if(Auth::user()->isLikedBy($post->id))
                             <span class="likes">
-                                <i class="far fa-heart like-toggle liked" data-review-id="{{ $post->id }}"></i>
+                                <i class="fas fa-heart like-toggle liked" data-review-id="{{ $post->id }}"></i>
                             <span class="like-counter">{{ $post->post_favorite_count }}</span>
                             </span><!-- /.likes -->
                         @else
                             <span class="likes">
-                                <i class="far fa-heart like-toggle" data-review-id="{{ $post->id }}"></i>
+                                <i class="fas fa-heart like-toggle white" data-review-id="{{ $post->id }}"></i>
                             <span class="like-counter">{{ $post->post_favorite_count }}</span>
                             </span><!-- /.likes -->
                         @endif
+                        </div>
 
                     </div>
 
@@ -76,7 +78,7 @@
             {!! Form::open(['url' => '/search', 'method' => 'get']) !!}
 
             <div class="div">
-            {{ Form::text('search',null,['class' => 'input search-space', 'placeholder' => 'ユーザー名']) }}</div>
+            {{ Form::text('search',null,['class' => 'input search-space']) }}</div>
 
             {!! Form::button('<div class="link blue">検索</div>', ['class' => "btn", 'type' => 'submit' ]) !!}
 
@@ -96,7 +98,7 @@
                         @endif
                         <div class="accordion-content">
                             @foreach ($category->postSubCategories as $sub)
-                            <a href=""><div class="nav-item">{{ $sub->sub_category }}</div></a>
+                            <a href="{{ route('search_sub',['sub_id'=>$sub->id]) }}"><div class="nav-item">{{ $sub->sub_category }}</div></a>
                             @endforeach
                         </div><!--/.accordion-content-->
 
