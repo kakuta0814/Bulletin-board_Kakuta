@@ -59,12 +59,12 @@
                     </div>
                     @if(count($favorites_judge)===1)
                         <span class="likes">
-                            <i class="far fa-heart like-toggle liked" data-review-id="{{ $post->id }}"></i>
+                            <i class="fas fa-heart like-toggle liked" data-review-id="{{ $post->id }}"></i>
                             <span class="like-counter">{{ $post->post_favorite_count }}</span>
                         </span>
                     @elseif(count($favorites_judge)===0)
                         <span class="likes">
-                            <i class="far fa-heart like-toggle" data-review-id="{{ $post->id }}"></i>
+                            <i class="fas fa-heart like-toggle white" data-review-id="{{ $post->id }}"></i>
                             <span class="like-counter">{{ $post->post_favorite_count }}</span>
                         </span>
                     @endif
@@ -110,15 +110,17 @@
 
                         @if(Auth::user()->comment_isLikedBy($comment->id))
                             <span class="likes">
-                                <i class="far fa-heart like-comment-toggle liked" data-comment-id="{{ $comment->id }}"></i>
+                                <i class="fas fa-heart like-comment-toggle liked" data-comment-id="{{ $comment->id }}"></i>
                                 <span class="comment-like-counter">{{ $comment->comment_favorite_count }}</span>
                             </span><!-- /.likes -->
                         @else
                             <span class="likes">
-                                <i class="far fa-heart like-comment-toggle" data-comment-id="{{ $comment->id }}"></i>
+                                <i class="fas fa-heart like-comment-toggle white" data-comment-id="{{ $comment->id }}"></i>
                                 <span class="like-counter">{{ $comment->comment_favorite_count }}</span>
                             </span><!-- /.likes -->
                         @endif
+
+
 
                     </div>
 
